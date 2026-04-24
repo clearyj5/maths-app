@@ -1,0 +1,27 @@
+{
+  "questionId": "higher-trig-001",
+  "level": "higher",
+  "topic": "trigonometry",
+  "subtopic": "cosine-rule",
+  "year": 2022,
+  "questionText": "In triangle $ABC$, side $a = 7\\text{ cm}$, side $b = 5\\text{ cm}$, and angle $C = 52°$. Find the length of side $c$, correct to two decimal places.",
+  "markingScheme": "Identify cosine rule as the correct approach **(1 mark)**\nSubstitute values correctly: $c^2 = 7^2 + 5^2 - 2(7)(5)\\cos 52°$ **(2 marks)**\nEvaluate to obtain $c^2 \\approx 30.91$ **(1 mark)**\nFinal answer $c \\approx 5.56\\text{ cm}$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Identify the correct formula",
+      "explanation": "Two sides and the included angle are given, so the cosine rule applies: $c^2 = a^2 + b^2 - 2ab\\cos C$."
+    },
+    {
+      "step": "Substitute the given values",
+      "explanation": "$c^2 = 7^2 + 5^2 - 2(7)(5)\\cos 52°$"
+    },
+    {
+      "step": "Evaluate the right-hand side",
+      "explanation": "$c^2 = 49 + 25 - 70\\cos 52° \\approx 74 - 43.09 = 30.91$"
+    },
+    {
+      "step": "Take the positive square root",
+      "explanation": "$c \\approx \\sqrt{30.91} \\approx 5.56\\text{ cm}$"
+    }
+  ]
+}

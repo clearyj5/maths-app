@@ -1,0 +1,23 @@
+{
+  "questionId": "ordinary-algebra-003",
+  "level": "ordinary",
+  "topic": "algebra",
+  "subtopic": "logarithms",
+  "year": 2018,
+  "questionText": "Using the laws of logarithms, write $\\log_{10}(8) + \\log_{10}(5) - \\log_{10}(4)$ as a single logarithm, and hence evaluate it.",
+  "markingScheme": "Apply log-addition law: $\\log_{10}(8 \\cdot 5)$ **(1 mark)**\nApply log-subtraction law: $\\log_{10}\\!\\left(\\tfrac{8 \\cdot 5}{4}\\right) = \\log_{10}(10)$ **(2 marks)**\nEvaluate $\\log_{10}(10) = 1$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Combine the sum using the log-product law",
+      "explanation": "$\\log_{10}(a) + \\log_{10}(b) = \\log_{10}(ab)$, so $\\log_{10}(8) + \\log_{10}(5) = \\log_{10}(40)$."
+    },
+    {
+      "step": "Combine the difference using the log-quotient law",
+      "explanation": "$\\log_{10}(a) - \\log_{10}(b) = \\log_{10}\\!\\left(\\tfrac{a}{b}\\right)$, so $\\log_{10}(40) - \\log_{10}(4) = \\log_{10}\\!\\left(\\tfrac{40}{4}\\right) = \\log_{10}(10)$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$\\log_{10}(10) = 1$."
+    }
+  ]
+}

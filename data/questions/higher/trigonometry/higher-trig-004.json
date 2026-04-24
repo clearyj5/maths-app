@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-trig-004",
+  "level": "higher",
+  "topic": "trigonometry",
+  "subtopic": "periodic-functions",
+  "year": 2024,
+  "questionText": "The height $h(t)$ of the tide above mean sea level, in metres, at a coastal location is modelled by $h(t) = 2.5\\sin\\!\\left(\\dfrac{\\pi t}{6}\\right)$, where $t$ is the number of hours after midnight and $0 \\leq t \\leq 24$.\n\n(a) State the maximum height of the tide above mean sea level.\n(b) Find all values of $t$ at which the tide reaches its maximum height.\n(c) Find all values of $t$ at which $h(t) = 1.25$, giving each answer as an exact time.",
+  "markingScheme": "(a) Maximum value of $\\sin$ is $1$, so maximum height is $2.5\\text{ m}$ **(1 mark)**\n(b) Solve $\\sin(\\pi t/6) = 1$: general solution $\\pi t/6 = \\pi/2 + 2k\\pi$, giving $t = 3, 15$ in range **(3 marks)**\n(c) Solve $\\sin(\\pi t/6) = 1/2$: $\\pi t/6 = \\pi/6 + 2k\\pi$ or $5\\pi/6 + 2k\\pi$, giving $t = 1, 5, 13, 17$ **(4 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Identify the maximum of the sine function",
+      "explanation": "Since $-1 \\leq \\sin x \\leq 1$ for all $x$, the maximum of $2.5\\sin(\\pi t/6)$ is $2.5 \\times 1 = 2.5\\text{ m}$."
+    },
+    {
+      "step": "Find $t$ values where the maximum is reached",
+      "explanation": "We need $\\sin(\\pi t/6) = 1$, so $\\pi t/6 = \\pi/2 + 2k\\pi$ for integer $k$. Therefore $t = 3 + 12k$. Within $0 \\leq t \\leq 24$, we get $t = 3$ and $t = 15$."
+    },
+    {
+      "step": "Set up the equation for $h(t) = 1.25$",
+      "explanation": "$2.5\\sin(\\pi t/6) = 1.25$ simplifies to $\\sin(\\pi t/6) = \\tfrac{1}{2}$."
+    },
+    {
+      "step": "Solve the sine equation",
+      "explanation": "$\\sin x = \\tfrac{1}{2}$ when $x = \\pi/6 + 2k\\pi$ or $x = 5\\pi/6 + 2k\\pi$. Setting $x = \\pi t/6$ gives $t = 1 + 12k$ or $t = 5 + 12k$."
+    },
+    {
+      "step": "Select solutions in the given range",
+      "explanation": "Within $0 \\leq t \\leq 24$: $t = 1, 5, 13, 17$."
+    }
+  ]
+}

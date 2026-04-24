@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-trig-004",
+  "level": "ordinary",
+  "topic": "trigonometry",
+  "subtopic": "exact-values",
+  "year": 2020,
+  "questionText": "Without using a calculator, evaluate $\\sin 30° \\cdot \\cos 60° + \\cos 30° \\cdot \\sin 60°$. Give your answer as an exact value.",
+  "markingScheme": "State $\\sin 30° = \\tfrac{1}{2}$, $\\cos 60° = \\tfrac{1}{2}$ **(1 mark)**\nState $\\cos 30° = \\tfrac{\\sqrt{3}}{2}$, $\\sin 60° = \\tfrac{\\sqrt{3}}{2}$ **(1 mark)**\nSubstitute and simplify to $\\tfrac{1}{4} + \\tfrac{3}{4}$ **(1 mark)**\nFinal answer $= 1$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Recall the exact values",
+      "explanation": "$\\sin 30° = \\tfrac{1}{2}$, $\\cos 60° = \\tfrac{1}{2}$, $\\cos 30° = \\tfrac{\\sqrt{3}}{2}$, $\\sin 60° = \\tfrac{\\sqrt{3}}{2}$."
+    },
+    {
+      "step": "Substitute into the expression",
+      "explanation": "$\\sin 30° \\cdot \\cos 60° + \\cos 30° \\cdot \\sin 60° = \\tfrac{1}{2} \\cdot \\tfrac{1}{2} + \\tfrac{\\sqrt{3}}{2} \\cdot \\tfrac{\\sqrt{3}}{2}$"
+    },
+    {
+      "step": "Simplify each term",
+      "explanation": "$= \\tfrac{1}{4} + \\tfrac{3}{4} = 1$."
+    },
+    {
+      "step": "(Optional) Recognise the identity",
+      "explanation": "This is the compound-angle identity $\\sin(A + B) = \\sin A\\cos B + \\cos A\\sin B$ with $A = 30°$, $B = 60°$, giving $\\sin 90° = 1$."
+    }
+  ]
+}

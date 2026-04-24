@@ -1,0 +1,23 @@
+{
+  "questionId": "ordinary-calc-003",
+  "level": "ordinary",
+  "topic": "calculus",
+  "subtopic": "definite-integral",
+  "year": 2019,
+  "questionText": "Evaluate $\\displaystyle\\int_1^3 (2x + 1)\\, dx$.",
+  "markingScheme": "Find the antiderivative: $x^2 + x$ **(2 marks)**\nEvaluate at upper limit: $3^2 + 3 = 12$ **(1 mark)**\nEvaluate at lower limit: $1^2 + 1 = 2$ **(1 mark)**\nSubtract: $12 - 2 = 10$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Find the antiderivative",
+      "explanation": "$\\displaystyle\\int (2x + 1)\\, dx = x^2 + x + C$. (The constant $C$ is not needed for a definite integral.)"
+    },
+    {
+      "step": "Apply the Fundamental Theorem of Calculus",
+      "explanation": "$\\displaystyle\\int_1^3 (2x+1)\\,dx = \\bigl[x^2 + x\\bigr]_1^3 = (3^2 + 3) - (1^2 + 1)$."
+    },
+    {
+      "step": "Compute",
+      "explanation": "$= 12 - 2 = 10$."
+    }
+  ]
+}

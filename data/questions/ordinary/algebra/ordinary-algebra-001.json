@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-algebra-001",
+  "level": "ordinary",
+  "topic": "algebra",
+  "subtopic": "quadratics",
+  "year": 2020,
+  "questionText": "Solve the equation $x^2 - 5x + 6 = 0$.",
+  "markingScheme": "Attempt factoring **(1 mark)**\nCorrect factorisation $(x - 2)(x - 3) = 0$ **(2 marks)**\nFinal answers $x = 2$, $x = 3$ **(2 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Look for two numbers that multiply to $6$ and add to $-5$",
+      "explanation": "We need factors of $6$ whose sum is $-5$. Both $-2$ and $-3$ satisfy: $(-2)(-3) = 6$ and $(-2) + (-3) = -5$."
+    },
+    {
+      "step": "Write the factorisation",
+      "explanation": "$x^2 - 5x + 6 = (x - 2)(x - 3)$."
+    },
+    {
+      "step": "Apply the zero-product property",
+      "explanation": "$(x - 2)(x - 3) = 0$ means $x - 2 = 0$ or $x - 3 = 0$."
+    },
+    {
+      "step": "State the solutions",
+      "explanation": "$x = 2$ or $x = 3$."
+    }
+  ]
+}

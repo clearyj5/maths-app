@@ -1,0 +1,23 @@
+{
+  "questionId": "ordinary-trig-002",
+  "level": "ordinary",
+  "topic": "trigonometry",
+  "subtopic": "area-of-triangle",
+  "year": 2019,
+  "questionText": "A triangle has two sides of length $8\\text{ cm}$ and $11\\text{ cm}$ with an included angle of $40°$. Find the area of the triangle, correct to one decimal place.",
+  "markingScheme": "Use area formula $A = \\tfrac{1}{2}ab\\sin C$ **(1 mark)**\nSubstitute: $A = \\tfrac{1}{2}(8)(11)\\sin 40°$ **(2 marks)**\nFinal answer $A \\approx 28.3\\text{ cm}^2$ **(2 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Select the correct formula",
+      "explanation": "When two sides and the included angle are known, use $A = \\tfrac{1}{2}ab\\sin C$."
+    },
+    {
+      "step": "Substitute the values",
+      "explanation": "$A = \\tfrac{1}{2}(8)(11)\\sin 40° = 44\\sin 40°$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$\\sin 40° \\approx 0.6428$, so $A \\approx 44 \\times 0.6428 \\approx 28.3\\text{ cm}^2$."
+    }
+  ]
+}

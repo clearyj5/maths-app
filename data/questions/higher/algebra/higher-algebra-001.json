@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-algebra-001",
+  "level": "higher",
+  "topic": "algebra",
+  "subtopic": "complex-numbers",
+  "year": 2022,
+  "questionText": "Let $z = 1 + i\\sqrt{3}$.\n\n(a) Express $z$ in polar form $r(\\cos\\theta + i\\sin\\theta)$.\n(b) Using De Moivre's Theorem, find $z^6$. Give your answer as a real or complex number in the form $a + bi$.",
+  "markingScheme": "(a) Compute modulus $|z| = 2$ **(1 mark)**\n(a) Compute argument $\\arg z = \\pi/3$ **(1 mark)**\n(a) Write polar form $2(\\cos(\\pi/3) + i\\sin(\\pi/3))$ **(1 mark)**\n(b) State De Moivre: $z^n = r^n(\\cos n\\theta + i\\sin n\\theta)$ **(1 mark)**\n(b) Apply with $n = 6$: $2^6(\\cos 2\\pi + i\\sin 2\\pi)$ **(1 mark)**\n(b) Simplify to $64$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Find the modulus",
+      "explanation": "$|z| = \\sqrt{1^2 + (\\sqrt{3})^2} = \\sqrt{1 + 3} = 2$."
+    },
+    {
+      "step": "Find the argument",
+      "explanation": "$z = 1 + i\\sqrt{3}$ is in the first quadrant. $\\tan\\theta = \\dfrac{\\sqrt{3}}{1} = \\sqrt{3}$, so $\\theta = \\dfrac{\\pi}{3}$."
+    },
+    {
+      "step": "Write in polar form",
+      "explanation": "$z = 2\\!\\left(\\cos\\dfrac{\\pi}{3} + i\\sin\\dfrac{\\pi}{3}\\right)$."
+    },
+    {
+      "step": "Apply De Moivre's Theorem",
+      "explanation": "$z^6 = 2^6\\!\\left(\\cos\\!\\left(6 \\cdot \\dfrac{\\pi}{3}\\right) + i\\sin\\!\\left(6 \\cdot \\dfrac{\\pi}{3}\\right)\\right) = 64(\\cos 2\\pi + i\\sin 2\\pi)$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$\\cos 2\\pi = 1$ and $\\sin 2\\pi = 0$, so $z^6 = 64(1 + 0i) = 64$."
+    }
+  ]
+}

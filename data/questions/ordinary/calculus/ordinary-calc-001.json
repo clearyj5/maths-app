@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-calc-001",
+  "level": "ordinary",
+  "topic": "calculus",
+  "subtopic": "differentiation",
+  "year": 2020,
+  "questionText": "Differentiate $y = 3x^2 - 4x + 7$ with respect to $x$.",
+  "markingScheme": "Apply the power rule to each term **(1 mark)**\n$\\tfrac{d}{dx}(3x^2) = 6x$ **(1 mark)**\n$\\tfrac{d}{dx}(-4x) = -4$ **(1 mark)**\n$\\tfrac{d}{dx}(7) = 0$ **(1 mark)**\nFinal answer $\\dfrac{dy}{dx} = 6x - 4$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Differentiate term by term",
+      "explanation": "The derivative of a sum is the sum of derivatives, so we differentiate $3x^2$, $-4x$, and $7$ separately."
+    },
+    {
+      "step": "Apply the power rule",
+      "explanation": "For $cx^n$, $\\tfrac{d}{dx}(cx^n) = cnx^{n-1}$. So $\\tfrac{d}{dx}(3x^2) = 6x$ and $\\tfrac{d}{dx}(-4x) = -4$."
+    },
+    {
+      "step": "Differentiate the constant",
+      "explanation": "The derivative of any constant is $0$, so $\\tfrac{d}{dx}(7) = 0$."
+    },
+    {
+      "step": "Combine the results",
+      "explanation": "$\\dfrac{dy}{dx} = 6x - 4 + 0 = 6x - 4$."
+    }
+  ]
+}

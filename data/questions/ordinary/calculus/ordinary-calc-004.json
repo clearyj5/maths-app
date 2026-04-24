@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-calc-004",
+  "level": "ordinary",
+  "topic": "calculus",
+  "subtopic": "stationary-points",
+  "year": 2023,
+  "questionText": "Find the coordinates of the stationary points of the function $f(x) = x^3 - 3x + 2$, and classify each as a local maximum or local minimum.",
+  "markingScheme": "Differentiate: $f'(x) = 3x^2 - 3$ **(1 mark)**\nSet $f'(x) = 0$ and solve: $x = \\pm 1$ **(2 marks)**\nFind $y$-values: $f(1) = 0$, $f(-1) = 4$ **(1 mark)**\nClassify using $f''(x) = 6x$: $(1,0)$ local min, $(-1,4)$ local max **(2 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Differentiate the function",
+      "explanation": "$f'(x) = 3x^2 - 3$."
+    },
+    {
+      "step": "Solve $f'(x) = 0$",
+      "explanation": "$3x^2 - 3 = 0 \\Rightarrow x^2 = 1 \\Rightarrow x = \\pm 1$."
+    },
+    {
+      "step": "Find the corresponding $y$-values",
+      "explanation": "$f(1) = 1 - 3 + 2 = 0$ and $f(-1) = -1 + 3 + 2 = 4$, so the stationary points are $(1, 0)$ and $(-1, 4)$."
+    },
+    {
+      "step": "Classify using the second derivative",
+      "explanation": "$f''(x) = 6x$. At $x = 1$: $f''(1) = 6 > 0$, so $(1, 0)$ is a local minimum. At $x = -1$: $f''(-1) = -6 < 0$, so $(-1, 4)$ is a local maximum."
+    }
+  ]
+}

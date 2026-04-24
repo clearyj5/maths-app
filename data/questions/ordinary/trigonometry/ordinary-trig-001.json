@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-trig-001",
+  "level": "ordinary",
+  "topic": "trigonometry",
+  "subtopic": "right-angled-triangle",
+  "year": 2022,
+  "questionText": "A right-angled triangle has a hypotenuse of length $13\\text{ cm}$ and one of the other sides of length $5\\text{ cm}$.\n\n(a) Find the length of the third side.\n(b) Find, correct to one decimal place, the size of the angle opposite the $5\\text{ cm}$ side.",
+  "markingScheme": "(a) Apply Pythagoras' Theorem: $13^2 - 5^2 = 144$; third side $= 12\\text{ cm}$ **(2 marks)**\n(b) Use $\\sin\\theta = \\frac{5}{13}$ **(1 mark)**\nCompute $\\theta = \\sin^{-1}(5/13) \\approx 22.6°$ **(2 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Identify that Pythagoras applies",
+      "explanation": "In a right-angled triangle, $(\\text{hypotenuse})^2 = (\\text{side 1})^2 + (\\text{side 2})^2$."
+    },
+    {
+      "step": "Solve for the unknown side",
+      "explanation": "Let the third side be $x$. Then $13^2 = 5^2 + x^2$, so $x^2 = 169 - 25 = 144$ and $x = 12\\text{ cm}$."
+    },
+    {
+      "step": "Set up the trig ratio",
+      "explanation": "The angle opposite the $5\\text{ cm}$ side has $\\sin\\theta = \\dfrac{\\text{opposite}}{\\text{hypotenuse}} = \\dfrac{5}{13}$."
+    },
+    {
+      "step": "Use inverse sine",
+      "explanation": "$\\theta = \\sin^{-1}\\!\\left(\\dfrac{5}{13}\\right) \\approx 22.6°$."
+    }
+  ]
+}

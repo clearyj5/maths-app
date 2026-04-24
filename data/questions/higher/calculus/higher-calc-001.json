@@ -1,0 +1,27 @@
+{
+  "questionId": "higher-calc-001",
+  "level": "higher",
+  "topic": "calculus",
+  "subtopic": "differentiation",
+  "year": 2022,
+  "questionText": "Differentiate $y = x^2 \\ln x$ with respect to $x$, and simplify your answer.",
+  "markingScheme": "Identify product rule applies **(1 mark)**\nCorrectly differentiate each factor: $\\tfrac{d}{dx}(x^2) = 2x$, $\\tfrac{d}{dx}(\\ln x) = \\tfrac{1}{x}$ **(2 marks)**\nApply product rule: $\\dfrac{dy}{dx} = 2x\\ln x + x^2 \\cdot \\tfrac{1}{x}$ **(1 mark)**\nSimplify to $x(2\\ln x + 1)$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Recognise the product rule",
+      "explanation": "The expression is a product of two functions $u = x^2$ and $v = \\ln x$. Use $\\dfrac{d}{dx}(uv) = u'v + uv'$."
+    },
+    {
+      "step": "Differentiate each factor",
+      "explanation": "$\\dfrac{d}{dx}(x^2) = 2x$ and $\\dfrac{d}{dx}(\\ln x) = \\dfrac{1}{x}$."
+    },
+    {
+      "step": "Apply the product rule",
+      "explanation": "$\\dfrac{dy}{dx} = (2x)(\\ln x) + (x^2)\\!\\left(\\dfrac{1}{x}\\right) = 2x\\ln x + x$."
+    },
+    {
+      "step": "Factor to simplify",
+      "explanation": "$2x\\ln x + x = x(2\\ln x + 1)$."
+    }
+  ]
+}

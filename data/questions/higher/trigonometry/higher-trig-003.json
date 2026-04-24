@@ -1,0 +1,27 @@
+{
+  "questionId": "higher-trig-003",
+  "level": "higher",
+  "topic": "trigonometry",
+  "subtopic": "identities",
+  "year": 2023,
+  "questionText": "Prove that $\\dfrac{1 - \\cos 2\\theta}{\\sin 2\\theta} = \\tan\\theta$ for all $\\theta$ such that $\\sin 2\\theta \\neq 0$.",
+  "markingScheme": "State the double-angle identity $1 - \\cos 2\\theta = 2\\sin^2\\theta$ **(1 mark)**\nState the double-angle identity $\\sin 2\\theta = 2\\sin\\theta\\cos\\theta$ **(1 mark)**\nSubstitute both into the left-hand side **(1 mark)**\nSimplify to obtain $\\dfrac{\\sin\\theta}{\\cos\\theta}$ **(1 mark)**\nConclude equals $\\tan\\theta$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Recall the double-angle identities",
+      "explanation": "Use $\\cos 2\\theta = 1 - 2\\sin^2\\theta$, which gives $1 - \\cos 2\\theta = 2\\sin^2\\theta$. Also, $\\sin 2\\theta = 2\\sin\\theta\\cos\\theta$."
+    },
+    {
+      "step": "Substitute into the left-hand side",
+      "explanation": "$\\dfrac{1 - \\cos 2\\theta}{\\sin 2\\theta} = \\dfrac{2\\sin^2\\theta}{2\\sin\\theta\\cos\\theta}$"
+    },
+    {
+      "step": "Cancel common factors",
+      "explanation": "Divide numerator and denominator by $2\\sin\\theta$ (valid since $\\sin 2\\theta \\neq 0$ implies $\\sin\\theta \\neq 0$): $\\dfrac{\\sin\\theta}{\\cos\\theta}$."
+    },
+    {
+      "step": "Apply the definition of $\\tan$",
+      "explanation": "$\\dfrac{\\sin\\theta}{\\cos\\theta} = \\tan\\theta$, which completes the proof."
+    }
+  ]
+}

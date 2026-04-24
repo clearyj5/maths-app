@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-trig-003",
+  "level": "ordinary",
+  "topic": "trigonometry",
+  "subtopic": "sine-rule",
+  "year": 2023,
+  "questionText": "In triangle $XYZ$, $x = 6\\text{ cm}$, $Y = 70°$, and $Z = 55°$. Find the length of side $y$, correct to one decimal place.",
+  "markingScheme": "Find angle $X = 180° - 70° - 55° = 55°$ **(1 mark)**\nApply sine rule: $\\dfrac{y}{\\sin Y} = \\dfrac{x}{\\sin X}$ **(1 mark)**\nRearrange: $y = \\dfrac{6\\sin 70°}{\\sin 55°}$ **(1 mark)**\nFinal answer $y \\approx 6.9\\text{ cm}$ **(2 marks)**",
+  "solutionSteps": [
+    {
+      "step": "Find the third angle",
+      "explanation": "Angles in a triangle sum to $180°$, so $X = 180° - 70° - 55° = 55°$."
+    },
+    {
+      "step": "Choose the sine rule",
+      "explanation": "We know a side $x$ and its opposite angle $X$, plus the angle $Y$ opposite the unknown side $y$. The sine rule gives $\\dfrac{x}{\\sin X} = \\dfrac{y}{\\sin Y}$."
+    },
+    {
+      "step": "Rearrange for $y$",
+      "explanation": "$y = \\dfrac{x\\sin Y}{\\sin X} = \\dfrac{6\\sin 70°}{\\sin 55°}$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$y \\approx \\dfrac{6 \\times 0.9397}{0.8192} \\approx 6.9\\text{ cm}$."
+    }
+  ]
+}

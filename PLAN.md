@@ -41,18 +41,19 @@ An AI-assisted Leaving Certificate Maths exam preparation platform. Students bro
 
 | Attribute       | Type   | Description                                           |
 | --------------- | ------ | ----------------------------------------------------- |
-| `PK`            | String | `TOPIC#<topicSlug>`                                   |
+| `PK`            | String | `LEVEL#<level>#TOPIC#<topicSlug>`                     |
 | `SK`            | String | `QUESTION#<questionId>`                               |
 | `questionId`    | String | UUID                                                  |
+| `level`         | String | `higher` or `ordinary`                                |
 | `topic`         | String | e.g. `trigonometry`                                   |
 | `subtopic`      | String | e.g. `sine-rule`                                      |
 | `year`          | Number | e.g. `2023`                                           |
-| `paper`         | String | `P1` or `P2`                                          |
-| `difficulty`    | String | `easy` / `medium` / `hard`                            |
 | `questionText`  | String | LaTeX-formatted question body                         |
 | `markingScheme` | String | LaTeX-formatted marking scheme                        |
 | `solutionSteps` | List   | Array of ordered step objects `{ step, explanation }` |
 | `GSI1PK`        | String | `YEAR#<year>` (GSI for year-based browsing)           |
+
+Partition key compounds level and topic so a single DynamoDB `Query` serves the primary UI flow ("browse all HL Trigonometry questions"). Level must be chosen before a student sees topics; it is never mixed in a single list.
 
 ### Table: `ChatSessions`
 
@@ -238,15 +239,20 @@ All handlers: Zod input validation, structured error responses (`{ error, code }
 
 **Pages:**
 
-- `/` — Landing page with topic grid and brief platform description
-- `/topics/[topic]` — Filterable question list for a topic
-- `/questions/[questionId]` — Full question page with AI chat
+- `/` — Level chooser (Higher Level / Ordinary Level) + brief platform description
+- `/[level]` — Topic grid for the selected level (`level` is `higher` or `ordinary`)
+- `/[level]/topics/[topic]` — Filterable question list for a topic at that level
+- `/[level]/questions/[questionId]` — Full question page with AI chat
+
+Level is a required URL segment for any question-browsing route. Students pick their level on the landing page and that choice is encoded in the URL going forward; there is no global toggle. This keeps HL and OL question banks fully segregated.
 
 **Components:**
 
-`<TopicGrid />` — Grid of topic cards; each shows topic name, question count, and a representative icon. Links to `/topics/[topic]`.
+`<LevelChooser />` — Two large cards on the landing page: Higher Level and Ordinary Level. Each links to `/[level]`.
 
-`<QuestionList />` — Renders question metadata cards with year, paper, and difficulty badges. Filter controls at top (dropdowns for year, paper, difficulty). Links to `/questions/[questionId]`.
+`<TopicGrid />` — Grid of topic cards; each shows topic name, question count (scoped to the current level), and a representative icon. Links to `/[level]/topics/[topic]`.
+
+`<QuestionList />` — Renders question metadata cards with year badges. Filter control at top (year dropdown). Links to `/[level]/questions/[questionId]`.
 
 `<QuestionViewer />` — Renders `questionText` via `<MathRenderer />`; hosts `<SolutionPanel />` and `<ChatPanel />` side-by-side on desktop, stacked on mobile.
 
@@ -471,7 +477,7 @@ Once the application is live and the UX has been validated with the mock provide
 
 1. Create Clerk production instance
 2. Wrap `apps/web` in `<ClerkProvider>`; add sign-in/sign-up pages
-3. Protect `/questions/[questionId]` behind `auth()` Next.js middleware
+3. Protect `/[level]/questions/[questionId]` behind `auth()` Next.js middleware
 4. Add Clerk JWT Lambda authoriser in Terraform `api_gateway` module
 5. Attach `userId` from JWT to `ChatSessions` items for cross-device history persistence
 
@@ -498,14 +504,17 @@ Once the application is live and the UX has been validated with the mock provide
 ├── apps/
 │   └── web/
 │       ├── app/
-│       │   ├── page.tsx                    # Landing / topic grid
-│       │   ├── topics/
-│       │   │   └── [topic]/
-│       │   │       └── page.tsx
-│       │   └── questions/
-│       │       └── [questionId]/
-│       │           └── page.tsx
+│       │   ├── page.tsx                    # Landing / level chooser
+│       │   └── [level]/
+│       │       ├── page.tsx                # Topic grid for level
+│       │       ├── topics/
+│       │       │   └── [topic]/
+│       │       │       └── page.tsx
+│       │       └── questions/
+│       │           └── [questionId]/
+│       │               └── page.tsx
 │       ├── components/
+│       │   ├── LevelChooser.tsx
 │       │   ├── TopicGrid.tsx
 │       │   ├── QuestionList.tsx
 │       │   ├── QuestionViewer.tsx

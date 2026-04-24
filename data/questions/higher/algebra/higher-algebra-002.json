@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-algebra-002",
+  "level": "higher",
+  "topic": "algebra",
+  "subtopic": "logarithms",
+  "year": 2021,
+  "questionText": "Solve the equation $\\log_2(x + 3) + \\log_2(x - 1) = 5$. Give all valid solutions, and show that any extraneous solutions are rejected.",
+  "markingScheme": "Combine logs: $\\log_2((x+3)(x-1)) = 5$ **(1 mark)**\nConvert to exponential form: $(x+3)(x-1) = 32$ **(1 mark)**\nExpand and rearrange to $x^2 + 2x - 35 = 0$ **(1 mark)**\nSolve: $x = 5$ or $x = -7$ **(1 mark)**\nCheck domain: reject $x = -7$ (makes $\\log_2(x+3) = \\log_2(-4)$ undefined) **(1 mark)**\nState valid solution $x = 5$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Apply the log-product law",
+      "explanation": "$\\log_2(x + 3) + \\log_2(x - 1) = \\log_2\\!\\bigl((x + 3)(x - 1)\\bigr)$."
+    },
+    {
+      "step": "Convert to exponential form",
+      "explanation": "$\\log_2\\!\\bigl((x+3)(x-1)\\bigr) = 5 \\Rightarrow (x+3)(x-1) = 2^5 = 32$."
+    },
+    {
+      "step": "Expand and form a quadratic",
+      "explanation": "$x^2 + 2x - 3 = 32 \\Rightarrow x^2 + 2x - 35 = 0$."
+    },
+    {
+      "step": "Solve the quadratic",
+      "explanation": "$(x + 7)(x - 5) = 0$, so $x = -7$ or $x = 5$."
+    },
+    {
+      "step": "Check the domain of the original equation",
+      "explanation": "$\\log_2$ requires positive arguments, so $x + 3 > 0$ and $x - 1 > 0$, i.e. $x > 1$. Therefore $x = -7$ is rejected and the only valid solution is $x = 5$."
+    }
+  ]
+}

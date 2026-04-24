@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-calc-002",
+  "level": "higher",
+  "topic": "calculus",
+  "subtopic": "integration",
+  "year": 2023,
+  "questionText": "Evaluate $\\displaystyle\\int_0^1 x e^{x^2}\\, dx$. Give your answer as an exact value.",
+  "markingScheme": "Identify substitution $u = x^2$ as a suitable approach **(1 mark)**\nCompute $du = 2x\\,dx$, so $x\\,dx = \\tfrac{1}{2}du$ **(1 mark)**\nTransform the limits: $x = 0 \\Rightarrow u = 0$, $x = 1 \\Rightarrow u = 1$ **(1 mark)**\nIntegrate: $\\tfrac{1}{2}\\!\\int_0^1 e^u\\, du = \\tfrac{1}{2}[e^u]_0^1$ **(1 mark)**\nFinal answer $\\tfrac{1}{2}(e - 1)$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Choose a substitution",
+      "explanation": "The integrand contains $e^{x^2}$ and an $x$ factor outside, which suggests $u = x^2$."
+    },
+    {
+      "step": "Compute $du$",
+      "explanation": "If $u = x^2$, then $du = 2x\\,dx$, so $x\\,dx = \\tfrac{1}{2}du$."
+    },
+    {
+      "step": "Change the limits",
+      "explanation": "When $x = 0$, $u = 0$. When $x = 1$, $u = 1$."
+    },
+    {
+      "step": "Rewrite the integral",
+      "explanation": "$\\displaystyle\\int_0^1 x e^{x^2}\\,dx = \\int_0^1 e^u \\cdot \\tfrac{1}{2}\\,du = \\tfrac{1}{2}\\int_0^1 e^u\\,du$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$\\tfrac{1}{2}[e^u]_0^1 = \\tfrac{1}{2}(e^1 - e^0) = \\tfrac{1}{2}(e - 1)$."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "questionId": "ordinary-calc-002",
+  "level": "ordinary",
+  "topic": "calculus",
+  "subtopic": "tangent-line",
+  "year": 2022,
+  "questionText": "Find the equation of the tangent to the curve $y = x^2 - 3x$ at the point where $x = 2$.",
+  "markingScheme": "Find $y$-coordinate at $x = 2$: $y = 4 - 6 = -2$ **(1 mark)**\nDifferentiate: $\\dfrac{dy}{dx} = 2x - 3$ **(1 mark)**\nSubstitute $x = 2$ to find slope $= 1$ **(1 mark)**\nApply point-slope form **(1 mark)**\nFinal answer $y = x - 4$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Find the point on the curve",
+      "explanation": "At $x = 2$: $y = 2^2 - 3(2) = 4 - 6 = -2$. The point of tangency is $(2,\\,-2)$."
+    },
+    {
+      "step": "Find the gradient function",
+      "explanation": "$\\dfrac{dy}{dx} = 2x - 3$."
+    },
+    {
+      "step": "Evaluate the gradient at $x = 2$",
+      "explanation": "Slope $m = 2(2) - 3 = 1$."
+    },
+    {
+      "step": "Write the tangent line",
+      "explanation": "Using point-slope form $y - y_1 = m(x - x_1)$: $y - (-2) = 1(x - 2)$, which simplifies to $y = x - 4$."
+    }
+  ]
+}

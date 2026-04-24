@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-trig-002",
+  "level": "higher",
+  "topic": "trigonometry",
+  "subtopic": "trigonometric-equations",
+  "year": 2021,
+  "questionText": "Solve the equation $2\\sin^2\\theta + \\sin\\theta - 1 = 0$ for $0° \\leq \\theta \\leq 360°$. Give all solutions in degrees.",
+  "markingScheme": "Recognise the equation is quadratic in $\\sin\\theta$ **(1 mark)**\nFactor as $(2\\sin\\theta - 1)(\\sin\\theta + 1) = 0$ **(2 marks)**\nSolve $\\sin\\theta = \\tfrac{1}{2}$: $\\theta = 30°, 150°$ **(1 mark)**\nSolve $\\sin\\theta = -1$: $\\theta = 270°$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Treat as a quadratic in $\\sin\\theta$",
+      "explanation": "Let $x = \\sin\\theta$. The equation becomes $2x^2 + x - 1 = 0$."
+    },
+    {
+      "step": "Factor the quadratic",
+      "explanation": "$2x^2 + x - 1 = (2x - 1)(x + 1)$, giving $x = \\tfrac{1}{2}$ or $x = -1$."
+    },
+    {
+      "step": "Solve $\\sin\\theta = \\tfrac{1}{2}$",
+      "explanation": "$\\sin\\theta$ is positive in quadrants I and II. Reference angle is $30°$, so $\\theta = 30°$ or $\\theta = 180° - 30° = 150°$."
+    },
+    {
+      "step": "Solve $\\sin\\theta = -1$",
+      "explanation": "$\\sin\\theta = -1$ only at $\\theta = 270°$ within the given range."
+    },
+    {
+      "step": "Collect all solutions",
+      "explanation": "$\\theta \\in \\{30°, 150°, 270°\\}$."
+    }
+  ]
+}

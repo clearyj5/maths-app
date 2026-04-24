@@ -1,0 +1,31 @@
+{
+  "questionId": "higher-algebra-003",
+  "level": "higher",
+  "topic": "algebra",
+  "subtopic": "geometric-series",
+  "year": 2024,
+  "questionText": "A geometric series has first term $a = 6$ and sum to infinity $S_\\infty = 24$.\n\n(a) Find the common ratio $r$.\n(b) Find the sum of the first $5$ terms, correct to two decimal places.",
+  "markingScheme": "(a) Use $S_\\infty = \\dfrac{a}{1 - r}$ **(1 mark)**\n(a) Solve $24 = \\dfrac{6}{1-r}$ to get $r = \\tfrac{3}{4}$ **(2 marks)**\n(b) Use $S_n = \\dfrac{a(1 - r^n)}{1 - r}$ **(1 mark)**\n(b) Substitute correctly **(1 mark)**\n(b) Final answer $S_5 \\approx 18.30$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Use the sum-to-infinity formula",
+      "explanation": "For $|r| < 1$, $S_\\infty = \\dfrac{a}{1 - r}$."
+    },
+    {
+      "step": "Solve for $r$",
+      "explanation": "$24 = \\dfrac{6}{1 - r} \\Rightarrow 1 - r = \\dfrac{6}{24} = \\dfrac{1}{4} \\Rightarrow r = \\dfrac{3}{4}$."
+    },
+    {
+      "step": "Write the finite-sum formula",
+      "explanation": "$S_n = \\dfrac{a(1 - r^n)}{1 - r}$."
+    },
+    {
+      "step": "Substitute $a = 6$, $r = \\tfrac{3}{4}$, $n = 5$",
+      "explanation": "$S_5 = \\dfrac{6\\bigl(1 - (3/4)^5\\bigr)}{1 - 3/4} = \\dfrac{6\\bigl(1 - 243/1024\\bigr)}{1/4} = 24 \\cdot \\dfrac{781}{1024}$."
+    },
+    {
+      "step": "Evaluate",
+      "explanation": "$S_5 = \\dfrac{18744}{1024} \\approx 18.30$."
+    }
+  ]
+}

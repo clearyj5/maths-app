@@ -1,0 +1,27 @@
+{
+  "questionId": "higher-calc-003",
+  "level": "higher",
+  "topic": "calculus",
+  "subtopic": "limits",
+  "year": 2021,
+  "questionText": "Evaluate $\\displaystyle\\lim_{x \\to 0} \\dfrac{\\sin(3x)}{2x}$.",
+  "markingScheme": "Recognise indeterminate form $\\tfrac{0}{0}$ **(1 mark)**\nRewrite using standard limit $\\lim_{u \\to 0}\\tfrac{\\sin u}{u} = 1$ **(2 marks)**\nManipulate to form $\\tfrac{3}{2}\\cdot\\tfrac{\\sin(3x)}{3x}$ **(1 mark)**\nConclude limit $= \\tfrac{3}{2}$ **(1 mark)**",
+  "solutionSteps": [
+    {
+      "step": "Check the form",
+      "explanation": "As $x \\to 0$, $\\sin(3x) \\to 0$ and $2x \\to 0$, giving $\\tfrac{0}{0}$ — an indeterminate form that needs work."
+    },
+    {
+      "step": "Force the standard limit into view",
+      "explanation": "Multiply and divide by $3$ to match the form $\\tfrac{\\sin u}{u}$: $\\dfrac{\\sin(3x)}{2x} = \\dfrac{3}{2} \\cdot \\dfrac{\\sin(3x)}{3x}$."
+    },
+    {
+      "step": "Apply the standard limit",
+      "explanation": "As $x \\to 0$, also $3x \\to 0$, so $\\displaystyle\\lim_{x\\to 0}\\dfrac{\\sin(3x)}{3x} = 1$."
+    },
+    {
+      "step": "Combine the constant and the limit",
+      "explanation": "$\\displaystyle\\lim_{x\\to 0}\\dfrac{\\sin(3x)}{2x} = \\dfrac{3}{2} \\cdot 1 = \\dfrac{3}{2}$."
+    }
+  ]
+}

@@ -22,10 +22,12 @@ Goal: a clickable, Vercel-hosted demo with dummy questions by topic, a mock AI c
 
 ## 2. Dummy Question Data
 
-- [ ] Author **8 trigonometry** questions in `data/questions/trigonometry/*.json` (sine rule, cosine rule, unit circle, identities)
-- [ ] Author **8 calculus** questions in `data/questions/calculus/*.json` (differentiation, integration, limits, related rates)
-- [ ] Author **6 algebra** questions in `data/questions/algebra/*.json` (quadratics, sequences, logs, complex numbers)
-- [ ] Every question includes: `questionId`, `topic`, `subtopic`, `year`, `paper`, `difficulty`, `questionText` (LaTeX), `markingScheme` (LaTeX), `solutionSteps`
+Questions are organised first by **level** (Higher / Ordinary), then by **topic**. No `paper` or `difficulty` fields — those were dropped as too prescriptive / too subjective.
+
+- [ ] Author **8 trigonometry** questions (4 Higher, 4 Ordinary) in `data/questions/<level>/trigonometry/*.json` — sine rule, cosine rule, unit circle, identities
+- [ ] Author **8 calculus** questions (4 Higher, 4 Ordinary) in `data/questions/<level>/calculus/*.json` — differentiation, integration, limits, related rates
+- [ ] Author **6 algebra** questions (3 Higher, 3 Ordinary) in `data/questions/<level>/algebra/*.json` — quadratics, sequences, logs, complex numbers
+- [ ] Every question includes: `questionId`, `level` (`higher` or `ordinary`), `topic`, `subtopic`, `year` (2018–2024), `questionText` (LaTeX), `markingScheme` (LaTeX), `solutionSteps`
 - [ ] Questions must be clearly fictional (no impersonation of the State Examinations Commission)
 - [ ] Add `data/questions/README.md` documenting the schema — this is the contract future real-data imports will follow
 
@@ -36,7 +38,7 @@ This is where the "safe to migrate later" guarantee lives. Get these right and t
 - [ ] `schemas/question.ts` — Zod schema matching the PLAN.md DynamoDB item shape exactly
 - [ ] `schemas/chat.ts` — Zod schemas for chat request and assistant message shapes
 - [ ] `shared/types.ts` — TypeScript types inferred from Zod schemas via `z.infer`
-- [ ] `repositories/question-repository.ts` — define the `QuestionRepository` interface (`getTopics`, `getQuestionsByTopic`, `getQuestion`)
+- [ ] `repositories/question-repository.ts` — define the `QuestionRepository` interface (`getTopics(level)`, `getQuestionsByTopic(level, topic, filters)`, `getQuestion(level, questionId)`). All methods take a `level` argument — HL and OL question banks are never mixed.
 - [ ] `repositories/local-json.ts` — `LocalJsonRepository` reading bundled JSON via dynamic imports
 - [ ] `repositories/index.ts` — factory returning the configured repo (currently always `LocalJsonRepository`; post-migration will branch on env var)
 - [ ] `providers/ai-provider.ts` — define `AIProvider` interface (`streamResponse(prompt): AsyncIterable<string>`)
@@ -54,10 +56,10 @@ This is where the "safe to migrate later" guarantee lives. Get these right and t
 
 Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`. When we migrate to Lambda, these files become 10-line Lambda handlers reusing the same modules.
 
-- [ ] `app/api/topics/route.ts` — GET → `repository.getTopics()`
-- [ ] `app/api/topics/[topic]/questions/route.ts` — GET with `?year`, `?paper`, `?difficulty` query params
-- [ ] `app/api/questions/[id]/route.ts` — GET with `?includeSolution=true` gating
-- [ ] `app/api/chat/[questionId]/route.ts` — POST body `{ sessionId, message, history }`
+- [ ] `app/api/[level]/topics/route.ts` — GET → `repository.getTopics(level)`
+- [ ] `app/api/[level]/topics/[topic]/questions/route.ts` — GET with `?year` query param
+- [ ] `app/api/[level]/questions/[id]/route.ts` — GET with `?includeSolution=true` gating
+- [ ] `app/api/[level]/chat/[questionId]/route.ts` — POST body `{ sessionId, message, history }`
   - [ ] Validate body with Zod
   - [ ] Sanitise user message via `lib/sanitise.ts`
   - [ ] Build prompt via `lib/prompt.ts`
@@ -74,16 +76,17 @@ Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`
 
 ## 6. Frontend: Landing & Browse
 
-- [ ] `/` page — hero section + `<TopicGrid />`
-- [ ] `<TopicGrid />` — responsive grid of topic cards with name, question count, icon
-- [ ] `/topics/[topic]` page — filterable question list for a topic
-- [ ] `<QuestionList />` — cards showing year, paper, difficulty badges, truncated preview
-- [ ] Filter controls with URL state persistence via `useSearchParams`
+- [ ] `/` page — hero + `<LevelChooser />` (two large cards: Higher Level / Ordinary Level)
+- [ ] `/[level]` page — topic grid for the chosen level
+- [ ] `<TopicGrid />` — responsive grid of topic cards with name, question count (scoped to level), icon
+- [ ] `/[level]/topics/[topic]` page — filterable question list for a topic at that level
+- [ ] `<QuestionList />` — cards showing year badge and truncated preview
+- [ ] Year filter with URL state persistence via `useSearchParams`
 - [ ] Empty states and loading skeletons
 
 ## 7. Frontend: Question Page
 
-- [ ] `/questions/[questionId]` page — Server Component fetches question metadata
+- [ ] `/[level]/questions/[questionId]` page — Server Component fetches question metadata (scoped to level)
 - [ ] Desktop: two-column layout — `<QuestionViewer />` left, `<ChatPanel />` right
 - [ ] Mobile: single-column with tab switcher (Question / Chat / Solution)
 - [ ] `<QuestionViewer />` — renders `questionText` via `<MathRenderer />`, shows metadata badges
@@ -96,7 +99,7 @@ Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`
 - [ ] `sessionId` UUIDv4 persisted in `sessionStorage` per question
 - [ ] Client-side message history only — no server persistence for demo
 - [ ] `<ChatPanel />` renders message list + input + send button
-- [ ] POST to `/api/chat/[questionId]` with `{ sessionId, message, history }`
+- [ ] POST to `/api/[level]/chat/[questionId]` with `{ sessionId, message, history }`
 - [ ] Stream response via `Response.body.getReader()`, append chunks to the latest assistant message
 - [ ] Render all messages through `<MathRenderer />`
 - [ ] Typing indicator during streaming
