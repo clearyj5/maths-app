@@ -1,164 +1,192 @@
-# TODO — Demo Milestone
+# TODO — Demo Milestone (Vercel-only)
 
-Goal: a clickable, end-to-end demo with dummy questions by topic, a mock AI chat per question, the production data format locked in, and a polished UI. Aligns with `PLAN.md` Phases 1–3.
+Goal: a clickable, Vercel-hosted demo with dummy questions by topic, a mock AI chat per question, the production data format locked in, and a polished UI. Designed so migrating to AWS later is a clean swap — not a rewrite.
 
-**Out of scope for this list**: authentication, real Bedrock calls, full test coverage, load testing, production CloudWatch alarms, custom domain. These come later.
+**Out of scope**: AWS infrastructure, Terraform, real Lambdas, DynamoDB, authentication, real Bedrock calls, full test coverage.
+
+**Architectural guarantee**: every abstraction in this list (repository, AI provider, session store) is designed to swap cleanly to AWS in the Post-Demo phase without touching UI or business logic.
 
 ---
 
 ## 1. Repository & Tooling
 
-- [ ] Initialise `pnpm` workspaces with `apps/*`, `lambdas/*`, `shared/*`
-- [ ] Configure root `tsconfig.base.json` with strict mode; per-package `tsconfig.json` extends it
-- [ ] Add ESLint (typescript-eslint, next, react) + Prettier + shared config
-- [ ] Add Husky + lint-staged pre-commit hook (lint + type-check staged files)
-- [ ] Add `.gitignore` covering `node_modules/`, `.next/`, `.env*`, `*.tfstate*`, `cdk.out`, `.DS_Store`
-- [ ] Add `.nvmrc` pinning Node 20
-- [ ] Create `shared/types.ts` for cross-package types (Question, ChatMessage, etc.)
+- [ ] Initialise single Next.js 14 app at repo root with `create-next-app` (App Router, TypeScript, Tailwind, ESLint)
+- [ ] Verify `tsconfig.json` has `strict: true`
+- [ ] Add Prettier config alongside create-next-app's ESLint
+- [ ] Add Husky + lint-staged pre-commit hook (lint staged files only)
+- [ ] Confirm `nvm use` picks v20 (`.nvmrc` already committed)
+- [ ] Install runtime deps: `zustand`, `katex`, `react-katex`, `zod`, `clsx`, `lucide-react`
+- [ ] Install dev deps: `vitest`, `@vitejs/plugin-react`, `@testing-library/react`, `@testing-library/user-event`, `jsdom`, `prettier`, `husky`, `lint-staged`
+- [ ] Configure app-wide font via `next/font` (Inter)
+- [ ] Import `katex/dist/katex.min.css` in root layout
 
-## 2. AWS Account Bootstrap (one-time, manual)
+## 2. Dummy Question Data
 
-- [ ] Create IAM user `maths-app-terraform` with programmatic access in `eu-west-1`
-- [ ] Attach least-privilege policy (DynamoDB, Lambda, API Gateway, IAM, CloudWatch Logs, S3 for state)
-- [ ] Create S3 bucket `maths-app-terraform-state-<account-id>` with versioning enabled
-- [ ] Create DynamoDB table `maths-app-terraform-lock` (PK `LockID` string)
-- [ ] Store AWS access key in GitHub Actions repo secrets
-- [ ] Store AWS credentials locally in `~/.aws/credentials` profile `maths-app-dev`
-
-## 3. Terraform Infrastructure
-
-- [ ] Set up `infra/` with `modules/` and `environments/{dev,prod}/`
-- [ ] Configure S3 remote backend + DynamoDB state locking in `environments/dev/backend.tf`
-- [ ] Write `modules/dynamodb/` creating `Questions` (with GSI1) and `ChatSessions` (with TTL) tables
-- [ ] Write `modules/lambda/` wrapping a Lambda function + CloudWatch log group + env vars
-- [ ] Write `modules/iam/` producing least-privilege execution roles per function
-- [ ] Write `modules/api_gateway/` creating REST API, CORS, usage plan, API key
-- [ ] Wire everything together in `environments/dev/main.tf`
-- [ ] Run `terraform init && terraform apply` and confirm all resources exist in `eu-west-1`
-
-## 4. Dummy Question Data
-
-- [ ] Define Zod schema for a Question in `shared/schemas/question.ts`
 - [ ] Author **8 trigonometry** questions in `data/questions/trigonometry/*.json` (sine rule, cosine rule, unit circle, identities)
 - [ ] Author **8 calculus** questions in `data/questions/calculus/*.json` (differentiation, integration, limits, related rates)
 - [ ] Author **6 algebra** questions in `data/questions/algebra/*.json` (quadratics, sequences, logs, complex numbers)
-- [ ] Each question includes: `questionId`, `topic`, `subtopic`, `year`, `paper`, `difficulty`, `questionText` (LaTeX), `markingScheme` (LaTeX), `solutionSteps` (array)
-- [ ] Ensure questions are clearly fictional (no impersonation of the State Examinations Commission)
-- [ ] Add `data/questions/README.md` documenting the schema for future real-data work
+- [ ] Every question includes: `questionId`, `topic`, `subtopic`, `year`, `paper`, `difficulty`, `questionText` (LaTeX), `markingScheme` (LaTeX), `solutionSteps`
+- [ ] Questions must be clearly fictional (no impersonation of the State Examinations Commission)
+- [ ] Add `data/questions/README.md` documenting the schema — this is the contract future real-data imports will follow
 
-## 5. Seed Script
+## 3. Shared Schemas & Abstractions
 
-- [ ] Implement `scripts/seed.ts` that reads all JSON files and validates with Zod
-- [ ] Use `BatchWriteItem` to seed `Questions` table; derive `PK`/`SK`/`GSI1PK` from JSON fields
-- [ ] Make the script idempotent — safe to re-run
-- [ ] Print a summary on exit: counts per topic, any validation failures
-- [ ] Add `pnpm seed` script at repo root
+This is where the "safe to migrate later" guarantee lives. Get these right and the AWS port is mechanical.
 
-## 6. Lambda: Questions API
+- [ ] `schemas/question.ts` — Zod schema matching the PLAN.md DynamoDB item shape exactly
+- [ ] `schemas/chat.ts` — Zod schemas for chat request and assistant message shapes
+- [ ] `shared/types.ts` — TypeScript types inferred from Zod schemas via `z.infer`
+- [ ] `repositories/question-repository.ts` — define the `QuestionRepository` interface (`getTopics`, `getQuestionsByTopic`, `getQuestion`)
+- [ ] `repositories/local-json.ts` — `LocalJsonRepository` reading bundled JSON via dynamic imports
+- [ ] `repositories/index.ts` — factory returning the configured repo (currently always `LocalJsonRepository`; post-migration will branch on env var)
+- [ ] `providers/ai-provider.ts` — define `AIProvider` interface (`streamResponse(prompt): AsyncIterable<string>`)
+- [ ] `providers/mock.ts` — `MockProvider` with three branches:
+  - [ ] "hint" keyword → single-step guidance from `solutionSteps[0]`
+  - [ ] "solution"/"answer" → stream all `solutionSteps` with simulated delays
+  - [ ] Otherwise → Socratic question referencing the problem context
+- [ ] `providers/bedrock.ts` — stub class that throws `'not implemented'`
+- [ ] `providers/index.ts` — `getAIProvider(name)` factory reading `AI_PROVIDER` env (default `mock`)
+- [ ] `lib/prompt.ts` — pure function: `(question, history, userMessage) => promptString`
+- [ ] `lib/session.ts` — pure functions for conversation truncation (10-turn cap)
+- [ ] `lib/sanitise.ts` — strip `---`, `System:`, `<instruction>` from user messages
 
-- [ ] `lambdas/get-topics/` — returns `[{ slug, label, questionCount }]` for all topics
-- [ ] `lambdas/get-questions/` — queries `TOPIC#<topic>` partition; supports `?year`, `?paper`, `?difficulty`
-- [ ] `lambdas/get-question/` — `GetItem` by `questionId`; gates `solutionSteps` behind `?includeSolution=true`
-- [ ] Each handler: Zod input validation, structured JSON logging, typed response
-- [ ] Package Lambdas with esbuild (single-file bundle, tree-shaken, no AWS SDK bundled since it's in runtime)
+## 4. Next.js API Routes (Mock AI Backend)
 
-## 7. Lambda: Chat with Mock AI Provider
+Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`. When we migrate to Lambda, these files become 10-line Lambda handlers reusing the same modules.
 
-- [ ] Define `AIProvider` interface (`streamResponse(prompt): AsyncIterable<string>`)
-- [ ] Implement `MockProvider` in `lambdas/chat/providers/mock.ts`
-  - [ ] Branch on user message: "hint" → single step from `solutionSteps[0]`
-  - [ ] Branch on "solution"/"answer" → stream all `solutionSteps` with delays
-  - [ ] Otherwise → Socratic question referencing the question's topic/subtopic
-  - [ ] Simulate streaming with `setTimeout` between chunks (~30ms per word)
-- [ ] Stub `BedrockProvider` in `lambdas/chat/providers/bedrock.ts` with `throw new Error('not implemented')`
-- [ ] Implement `getAIProvider(name)` factory reading from `AI_PROVIDER` env var (defaults to `mock`)
-- [ ] Implement `POST /questions/{questionId}/chat` handler:
-  - [ ] Validate body `{ sessionId, message }` with Zod (message max 2000 chars)
-  - [ ] Sanitise user message (strip `---`, `System:`, `<instruction>`, etc.)
-  - [ ] Fetch question + last 10 session messages from DynamoDB
-  - [ ] Build prompt per `PLAN.md` §3.4 (even for mock — keeps prompt logic testable)
-  - [ ] Persist user message to `ChatSessions`
-  - [ ] Stream provider response back via Lambda Response Streaming
-  - [ ] Persist assembled assistant response to `ChatSessions`
-- [ ] Deploy chat Lambda via Terraform with `AI_PROVIDER=mock`
+- [ ] `app/api/topics/route.ts` — GET → `repository.getTopics()`
+- [ ] `app/api/topics/[topic]/questions/route.ts` — GET with `?year`, `?paper`, `?difficulty` query params
+- [ ] `app/api/questions/[id]/route.ts` — GET with `?includeSolution=true` gating
+- [ ] `app/api/chat/[questionId]/route.ts` — POST body `{ sessionId, message, history }`
+  - [ ] Validate body with Zod
+  - [ ] Sanitise user message via `lib/sanitise.ts`
+  - [ ] Build prompt via `lib/prompt.ts`
+  - [ ] Return `new Response(readableStream)` piping `provider.streamResponse()` (Web Standards — works in both Next.js and Lambda Response Streaming later)
+- [ ] All routes: Zod validation, structured JSON logging, proper HTTP status codes
+- [ ] Runtime: `export const runtime = 'nodejs'` for parity with future Lambda Node 20
 
-## 8. Next.js Frontend Scaffolding
+## 5. Shared UI Primitives
 
-- [ ] Bootstrap `apps/web/` with `create-next-app` (App Router, TypeScript, Tailwind, ESLint)
-- [ ] Configure Tailwind with a design-token theme: colours, typography scale, spacing, radius
-- [ ] Install `zustand`, `react-katex`, `katex` (CSS), `zod`, `clsx`, `lucide-react` (icons)
-- [ ] Add `lib/api.ts` — typed fetch wrappers around the four API Gateway endpoints
-- [ ] Add `.env.local` with `NEXT_PUBLIC_API_BASE_URL` and `NEXT_PUBLIC_API_KEY`
-- [ ] Import `katex/dist/katex.min.css` in the root layout
-- [ ] Configure app-wide font (Inter or similar) via `next/font`
-
-## 9. Shared UI Primitives
-
-- [ ] `<MathRenderer />` — splits text on `$...$` / `$$...$$`, renders via `react-katex`, wraps in error boundary that falls back to raw LaTeX
+- [ ] `<MathRenderer />` — splits on `$...$` / `$$...$$`, renders via `react-katex`, error boundary falls back to raw LaTeX
 - [ ] `<Button />`, `<Badge />`, `<Card />` — base primitives with Tailwind variants
-- [ ] `<Skeleton />` — loading placeholder with shimmer animation
+- [ ] `<Skeleton />` — shimmer loading placeholder
 - [ ] `<Select />`, `<SearchInput />` — filter controls
 
-## 10. Frontend: Landing & Browse
+## 6. Frontend: Landing & Browse
 
-- [ ] `/` page — hero section explaining the platform + `<TopicGrid />`
-- [ ] `<TopicGrid />` — responsive grid of topic cards (name, question count, icon, short description)
-- [ ] `/topics/[topic]` page — header with topic name + `<QuestionList />` with filter controls
-- [ ] `<QuestionList />` — card per question showing year, paper, difficulty badges, and a truncated preview
-- [ ] Filter controls for year / paper / difficulty with URL state persistence (`useSearchParams`)
-- [ ] Empty states and loading skeletons for both pages
+- [ ] `/` page — hero section + `<TopicGrid />`
+- [ ] `<TopicGrid />` — responsive grid of topic cards with name, question count, icon
+- [ ] `/topics/[topic]` page — filterable question list for a topic
+- [ ] `<QuestionList />` — cards showing year, paper, difficulty badges, truncated preview
+- [ ] Filter controls with URL state persistence via `useSearchParams`
+- [ ] Empty states and loading skeletons
 
-## 11. Frontend: Question Page
+## 7. Frontend: Question Page
 
 - [ ] `/questions/[questionId]` page — Server Component fetches question metadata
-- [ ] Two-column layout on desktop: `<QuestionViewer />` left, `<ChatPanel />` right
-- [ ] Stacked single-column layout on mobile with tab switcher (Question / Chat / Solution)
+- [ ] Desktop: two-column layout — `<QuestionViewer />` left, `<ChatPanel />` right
+- [ ] Mobile: single-column with tab switcher (Question / Chat / Solution)
 - [ ] `<QuestionViewer />` — renders `questionText` via `<MathRenderer />`, shows metadata badges
-- [ ] `<SolutionPanel />` — collapsible toggle; reveals `solutionSteps` (numbered) and `markingScheme`
-- [ ] Each step has an "Explain this step" button that pre-fills and submits the chat
+- [ ] `<SolutionPanel />` — collapsible; reveals numbered solution steps + marking scheme
+- [ ] "Explain this step" button on each step pre-fills and submits the chat
 
-## 12. Frontend: Chat Panel
+## 8. Frontend: Chat Panel
 
-- [ ] Zustand store `store/chat.ts` keyed by `questionId` (switching questions resets state cleanly)
-- [ ] `sessionId` generated client-side (UUID v4), persisted in `sessionStorage` per question
+- [ ] Zustand store `store/chat.ts` keyed by `questionId` (switching questions resets cleanly)
+- [ ] `sessionId` UUIDv4 persisted in `sessionStorage` per question
+- [ ] Client-side message history only — no server persistence for demo
 - [ ] `<ChatPanel />` renders message list + input + send button
+- [ ] POST to `/api/chat/[questionId]` with `{ sessionId, message, history }`
 - [ ] Stream response via `Response.body.getReader()`, append chunks to the latest assistant message
-- [ ] Typing indicator (animated dots) while streaming
+- [ ] Render all messages through `<MathRenderer />`
+- [ ] Typing indicator during streaming
 - [ ] Quick-action buttons: "Give me a hint", "Walk me through the solution"
-- [ ] Render all messages through `<MathRenderer />` so LaTeX in replies displays correctly
-- [ ] Graceful error state if the chat endpoint fails (inline retry, conversation preserved)
-- [ ] Auto-scroll to bottom on new message, with "scroll to latest" button if user scrolled up
+- [ ] Inline error state with retry; conversation history preserved on failure
+- [ ] Auto-scroll to bottom; "scroll to latest" button if the user scrolled up mid-stream
 
-## 13. UI Polish & Aesthetic
+## 9. UI Polish & Aesthetic
 
-- [ ] Final design pass: consistent spacing, typography hierarchy, colour contrast (WCAG AA minimum)
-- [ ] Dark mode support via Tailwind `dark:` classes + system preference detection
+- [ ] Design pass: consistent spacing, typography hierarchy, WCAG AA colour contrast
+- [ ] Dark mode via Tailwind `dark:` classes + system preference detection
 - [ ] Smooth transitions on panel toggles, hover states, focus rings
 - [ ] Loading skeletons on every async boundary
-- [ ] Favicon, `app/icon.tsx`, and OG image
-- [ ] Responsive testing at 375px / 768px / 1280px / 1920px
-- [ ] Keyboard navigation works for topic grid, question list, chat (Enter submits, Esc clears)
+- [ ] Favicon, `app/icon.tsx`, OG image for share links
+- [ ] Responsive testing at 375 / 768 / 1280 / 1920
+- [ ] Full keyboard navigation (Enter submits, Esc clears, tab order sensible)
 
-## 14. Smoke Tests & Demo Prep
+## 10. Smoke Tests
 
-- [ ] Vitest smoke test on `MockProvider` covering hint / solution / generic branches
-- [ ] Vitest smoke test on prompt-construction logic
-- [ ] Playwright smoke test: browse → pick question → LaTeX renders → send chat → streamed reply appears → toggle solution
-- [ ] `pnpm dev` works end-to-end against deployed `dev` API
-- [ ] Record a short screen capture of the demo flow (for stakeholder review)
-- [ ] Write a short `DEMO.md` explaining how to run the demo locally and what to click
+- [ ] Vitest: `MockProvider` hint / solution / generic branches
+- [ ] Vitest: `lib/prompt.ts` variable interpolation
+- [ ] Vitest: `lib/session.ts` 10-turn truncation
+- [ ] Vitest: `LocalJsonRepository` filters + not-found handling
+- [ ] Vitest: `lib/sanitise.ts` strips injection markers
+- [ ] Manual walkthrough: browse → question → render → send chat → toggle solution → "explain this step"
+- [ ] Run the walkthrough both locally (`pnpm dev`) and against the Vercel preview URL
+
+## 11. Vercel Deployment
+
+User actions (I can't do these for you):
+
+- [ ] Sign up at [vercel.com](https://vercel.com) with your GitHub account — choose the **Hobby** plan (free, sufficient for this demo)
+- [ ] Install the **Vercel for GitHub** app and grant access to `clearyj5/maths-app`
+- [ ] In the Vercel dashboard: **Add New → Project** → import `clearyj5/maths-app`
+- [ ] Accept Vercel's auto-detection (Framework: Next.js, root directory `/`, no overrides needed)
+- [ ] No environment variables required — the mock provider has no secrets
+- [ ] Click **Deploy**
+
+Post-deployment:
+
+- [ ] Visit the auto-generated `*.vercel.app` URL, confirm the demo loads
+- [ ] Verify: every push to `main` auto-deploys to production
+- [ ] Verify: opening a PR creates a unique preview URL
+- [ ] (Optional, later) Add a custom domain in **Project Settings → Domains**
+
+## 12. Demo Prep
+
+- [ ] Record a short screen capture of the full demo flow
+- [ ] Write `DEMO.md` with local dev instructions, production URL, and a list of features to try
+- [ ] Share the Vercel URL with stakeholders
 
 ---
 
-## Definition of Done
+## Definition of Done (Demo)
 
-The demo is complete when a stakeholder can, from a fresh machine:
+A stakeholder can, from a link you send them:
 
-1. Clone the repo and run `pnpm install && pnpm dev`
-2. Open the landing page and see three topics with question counts
+1. Land on the platform
+2. See three topics with question counts
 3. Pick any topic, filter by year/difficulty, open a question
-4. See the question rendered with proper LaTeX
-5. Ask the AI tutor a question and see a streamed, contextual response
-6. Click "Give me a hint" and see a single guided step
-7. Toggle the solution panel and click "Explain this step" — chat responds in context
-8. Browse on a phone and have a comparable experience
+4. See LaTeX render correctly
+5. Ask the AI tutor and see a streamed, contextual response
+6. Click "Give me a hint" → single guided step
+7. Toggle the solution, click "Explain this step" → chat responds in context
+8. Use it comfortably on their phone
+
+---
+
+# Post-Demo: AWS Migration
+
+Once the demo is validated, migrate backend to AWS following `PLAN.md` Phases 1–6. The migration is **wiring, not redesign** — all business logic, UI, schemas, and abstractions carry over unchanged.
+
+## Migration Checklist (Summary)
+
+- [ ] AWS Account Bootstrap — IAM user confirmed, create S3 state bucket `maths-app-terraform-state-531472034878`, create DynamoDB lock table `maths-app-terraform-lock`
+- [ ] Terraform modules: `dynamodb`, `lambda`, `api_gateway`, `iam` (see `PLAN.md` §1.3)
+- [ ] Implement `DynamoDBRepository` class satisfying the `QuestionRepository` interface
+- [ ] Build seed script that writes the same JSON files to the DynamoDB `Questions` table
+- [ ] Port each Next.js route handler to a Lambda — wrapper is new, business logic is reused from `lib/` and `repositories/`
+- [ ] Add `ChatSessions` persistence to chat Lambda (currently client-side only)
+- [ ] Swap repository binding via env var (`DATA_SOURCE=dynamodb`)
+- [ ] Update frontend `lib/api.ts` base URL to API Gateway
+- [ ] Smoke test end-to-end against AWS `dev` environment
+- [ ] Add CloudWatch log retention, error alarms, review Budgets
+- [ ] Once stable, decommission the Next.js API route handlers
+
+Full detail in `PLAN.md` Phases 1–6.
+
+---
+
+# Future: Bedrock Activation & Auth
+
+See `PLAN.md` "Future Phase" sections — unchanged from prior plan, triggered when the product is ready for live AI and authenticated users.
