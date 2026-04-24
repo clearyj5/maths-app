@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { MathRenderer } from '@/components/MathRenderer';
 import type { Level, QuestionSummary } from '@/shared/types';
@@ -50,9 +50,9 @@ export function QuestionList({ level, questions }: QuestionListProps) {
               <CardTitle>{prettifySubtopic(question.subtopic)}</CardTitle>
               <Badge variant="year">{question.year}</Badge>
             </CardHeader>
-            <CardDescription className="text-base text-slate-700 dark:text-slate-300">
+            <div className="text-base text-slate-700 dark:text-slate-300">
               <MathRenderer>{questionPreview(question.questionText)}</MathRenderer>
-            </CardDescription>
+            </div>
           </Card>
         </Link>
       ))}

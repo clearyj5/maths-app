@@ -38,7 +38,10 @@ export function MathRenderer({ children, className }: MathRendererProps): ReactN
   const segments = splitMath(children);
 
   return (
-    <div className={className} style={{ whiteSpace: 'pre-wrap' }}>
+    // Root is a <span> (with display: block) rather than <div> so the component
+    // is valid HTML even when nested inside a <p>. A real <div> inside a <p>
+    // triggers a React hydration mismatch because browsers auto-close the <p>.
+    <span className={className} style={{ whiteSpace: 'pre-wrap', display: 'block' }}>
       {segments.map((segment, i) => {
         switch (segment.kind) {
           case 'text':
@@ -65,6 +68,6 @@ export function MathRenderer({ children, className }: MathRendererProps): ReactN
             );
         }
       })}
-    </div>
+    </span>
   );
 }
