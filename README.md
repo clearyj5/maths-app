@@ -6,7 +6,6 @@ Each question is paired with a context-aware AI tutor that can answer any studen
 
 Rather than passively viewing solutions, students engage in an active learning process — asking questions, requesting hints, and exploring step-by-step reasoning in real time.
 
-
 🎯 Core Functionality
 Topic-Based Question Bank
 Structured by syllabus topics and subtopics
@@ -27,14 +26,13 @@ Toggleable full solutions
 Structured marking schemes aligned with exam standards
 AI can explain marking breakdowns
 
-
 🏗️ Technical Architecture
 
 1. Frontend
-Framework: Next.js (React-based)
-Styling: Tailwind CSS
-State Management: React Context / Zustand (lightweight, scalable)
-Math Rendering: KaTeX or MathJax for LaTeX support
+   Framework: Next.js (React-based)
+   Styling: Tailwind CSS
+   State Management: React Context / Zustand (lightweight, scalable)
+   Math Rendering: KaTeX or MathJax for LaTeX support
 
 Key Design Principles:
 
@@ -44,18 +42,17 @@ Real-time UI updates for chat interactions
 Clean separation between UI and data-fetching layers
 
 2. Backend (Serverless Architecture)
-Compute: AWS Lambda
-API Layer: Amazon API Gateway
-Database: Amazon DynamoDB
-Authentication (optional initially): Clerk or Cognito
+   Compute: AWS Lambda
+   API Layer: Amazon API Gateway
+   Database: Amazon DynamoDB
+   Authentication (optional initially): Clerk or Cognito
 
 Responsibilities:
 
 Serve question data and metadata
 Handle chat requests
 Orchestrate AI calls
-Manage session context
-3. AI Layer
+Manage session context 3. AI Layer
 Model Provider: Amazon Bedrock
 Access to foundation models (e.g. Claude, Titan)
 Core Design Pattern: Retrieval-Augmented Generation (RAG)
@@ -76,7 +73,6 @@ Prevents hallucination
 Ensures exam-accurate explanations
 Keeps responses grounded in curriculum
 
-
 🧩 AI Tutor Design
 
 The AI is not a generic chatbot.
@@ -95,37 +91,35 @@ Cannot answer outside provided context unless explicitly allowed
 Encouraged to guide rather than immediately solve
 Structured response formatting (steps, reasoning, conclusion)
 
-
 ⚙️ Key Technical Considerations
 
 1. Latency & Performance
-Use caching for:
-Question data
-Frequently accessed AI responses
-Stream responses where possible for better UX
+   Use caching for:
+   Question data
+   Frequently accessed AI responses
+   Stream responses where possible for better UX
 
 2. Prompt Engineering
-Strict templates to ensure:
-Consistent structure
-Curriculum alignment
-Step-by-step clarity
+   Strict templates to ensure:
+   Consistent structure
+   Curriculum alignment
+   Step-by-step clarity
 
 3. Context Management
-Maintain per-question chat context (not global)
-Limit token usage by:
-Injecting only relevant data
-Truncating long conversations intelligently
+   Maintain per-question chat context (not global)
+   Limit token usage by:
+   Injecting only relevant data
+   Truncating long conversations intelligently
 
 4. Scalability
-Fully serverless → auto-scaling by design
-Stateless Lambda functions
-DynamoDB for high-throughput read-heavy workloads
+   Fully serverless → auto-scaling by design
+   Stateless Lambda functions
+   DynamoDB for high-throughput read-heavy workloads
 
 5. Security & Cost Control
-Rate limiting on AI endpoints
-API key or authenticated access for usage tracking
-Guardrails to prevent prompt abuse
-
+   Rate limiting on AI endpoints
+   API key or authenticated access for usage tracking
+   Guardrails to prevent prompt abuse
 
 🚀 Extensibility
 
@@ -134,7 +128,6 @@ Although initially focused on Maths, the architecture is subject-agnostic:
 Swap dataset → supports other Leaving Certificate subjects
 AI layer remains unchanged
 UI components reusable across disciplines
-
 
 🧠 Summary
 

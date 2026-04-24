@@ -1,157 +1,125 @@
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "sts:GetCallerIdentity",
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreateRole",
-                "iam:DeleteRole",
-                "iam:GetRole",
-                "iam:PassRole",
-                "iam:AttachRolePolicy",
-                "iam:DetachRolePolicy",
-                "iam:PutRolePolicy",
-                "iam:DeleteRolePolicy"
-            ],
-            "Resource": [
-                "arn:aws:iam::*:role/claude-*",
-                "arn:aws:iam::*:role/maths-app-*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreatePolicy",
-                "iam:DeletePolicy",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion"
-            ],
-            "Resource": [
-                "arn:aws:iam::*:policy/claude-*",
-                "arn:aws:iam::*:policy/maths-app-*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:ListRoles",
-                "iam:ListPolicies",
-                "iam:ListAttachedRolePolicies",
-                "iam:ListRolePolicies",
-                "iam:GetRolePolicy",
-                "iam:GetUser",
-                "iam:ListUsers",
-                "iam:ListInstanceProfiles",
-                "iam:GetInstanceProfile"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Deny",
-            "Action": [
-                "iam:AttachRolePolicy",
-                "iam:CreatePolicy"
-            ],
-            "Resource": "*",
-            "Condition": {
-                "StringEquals": {
-                    "iam:PolicyARN": [
-                        "arn:aws:iam::aws:policy/AdministratorAccess",
-                        "arn:aws:iam::aws:policy/IAMFullAccess"
-                    ]
-                }
-            }
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket",
-                "s3:GetBucketLocation",
-                "s3:GetBucketVersioning"
-            ],
-            "Resource": "arn:aws:s3:::maths-app-terraform-state-531472034878"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": "arn:aws:s3:::maths-app-terraform-state-531472034878/*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:ListTables"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:*:*:table/maths-app-*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "lambda:ListFunctions",
-                "lambda:GetFunction",
-                "lambda:GetFunctionConfiguration"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": "lambda:*",
-            "Resource": "arn:aws:lambda:*:*:function:maths-app-*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "apigateway:GET",
-                "apigateway:POST",
-                "apigateway:PUT",
-                "apigateway:PATCH",
-                "apigateway:DELETE"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:DescribeLogGroups",
-                "logs:DescribeLogStreams"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutRetentionPolicy",
-                "logs:PutLogEvents",
-                "logs:DeleteLogGroup",
-                "logs:TagResource",
-                "logs:UntagResource"
-            ],
-            "Resource": "arn:aws:logs:*:*:log-group:/aws/lambda/maths-app-*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "cloudwatch:ListMetrics",
-                "cloudwatch:GetMetricData",
-                "cloudwatch:GetMetricStatistics"
-            ],
-            "Resource": "*"
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:GetCallerIdentity",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy"
+      ],
+      "Resource": ["arn:aws:iam::*:role/claude-*", "arn:aws:iam::*:role/maths-app-*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["iam:CreatePolicy", "iam:DeletePolicy", "iam:GetPolicy", "iam:GetPolicyVersion"],
+      "Resource": ["arn:aws:iam::*:policy/claude-*", "arn:aws:iam::*:policy/maths-app-*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListRoles",
+        "iam:ListPolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:GetUser",
+        "iam:ListUsers",
+        "iam:ListInstanceProfiles",
+        "iam:GetInstanceProfile"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Deny",
+      "Action": ["iam:AttachRolePolicy", "iam:CreatePolicy"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PolicyARN": [
+            "arn:aws:iam::aws:policy/AdministratorAccess",
+            "arn:aws:iam::aws:policy/IAMFullAccess"
+          ]
         }
-    ]
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetBucketLocation", "s3:GetBucketVersioning"],
+      "Resource": "arn:aws:s3:::maths-app-terraform-state-531472034878"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::maths-app-terraform-state-531472034878/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["dynamodb:DescribeTable", "dynamodb:ListTables"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "dynamodb:*",
+      "Resource": "arn:aws:dynamodb:*:*:table/maths-app-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["lambda:ListFunctions", "lambda:GetFunction", "lambda:GetFunctionConfiguration"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": "arn:aws:lambda:*:*:function:maths-app-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:PATCH",
+        "apigateway:DELETE"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["logs:DescribeLogGroups", "logs:DescribeLogStreams"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutRetentionPolicy",
+        "logs:PutLogEvents",
+        "logs:DeleteLogGroup",
+        "logs:TagResource",
+        "logs:UntagResource"
+      ],
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/lambda/maths-app-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:ListMetrics",
+        "cloudwatch:GetMetricData",
+        "cloudwatch:GetMetricStatistics"
+      ],
+      "Resource": "*"
+    }
+  ]
 }

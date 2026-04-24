@@ -31,21 +31,27 @@ The full product spec is in `README.md`. The production delivery plan — includ
 ## Architecture conventions
 
 ### AI provider abstraction
+
 The chat Lambda resolves its provider from the `AI_PROVIDER` env var (`mock` | `bedrock`). New AI features must go through the `AIProvider` interface, never import Bedrock SDK directly from handler code. This is what keeps the Bedrock swap a one-line config change.
 
 ### LaTeX handling
+
 Question text, marking schemes, and AI responses all use LaTeX with `$...$` for inline and `$$...$$` for block math. The `<MathRenderer />` component is the single choke point for rendering — do not bypass it. Wrap new math-rendering usage in its error boundary.
 
 ### Prompt injection defence
+
 User messages must be sanitised in the chat Lambda before being interpolated into the prompt. Strip `---`, `System:`, `<instruction>`, and similar markers. Never trust client-supplied context.
 
 ### Validation at boundaries
+
 Every Lambda handler validates its input with Zod. The seed script validates every JSON file with Zod. Do not add ad-hoc `if (typeof x === 'string')` checks — extend the schema instead.
 
 ### Structured logging
+
 Lambdas log JSON: `{ level, requestId, questionId, durationMs, error? }`. Do not use `console.log("something happened")`-style free-text logs.
 
 ### Rate limits
+
 API Gateway enforces 100 RPM on `/chat` and 500 RPM on question endpoints via usage plans. Do not add application-level rate limiting that duplicates this.
 
 ## Repository layout
@@ -103,7 +109,7 @@ terraform apply
 
 ## What not to do
 
-- Do not add comments that describe *what* the code does; names should carry that. Comments are for non-obvious *why* only.
+- Do not add comments that describe _what_ the code does; names should carry that. Comments are for non-obvious _why_ only.
 - Do not add backwards-compatibility shims for code that hasn't shipped yet.
 - Do not introduce new dependencies for problems already solved by the stack above (e.g. don't add `axios` — use `fetch`; don't add Redux — use Zustand).
 - Do not commit AWS credentials, API keys, Clerk secrets, or real student data. `.env*` files must be gitignored.
