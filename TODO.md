@@ -57,15 +57,17 @@ This is where the "safe to migrate later" guarantee lives. Get these right and t
 Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`. When we migrate to Lambda, these files become 10-line Lambda handlers reusing the same modules.
 
 - [ ] `app/api/[level]/topics/route.ts` — GET → `repository.getTopics(level)`
-- [ ] `app/api/[level]/topics/[topic]/questions/route.ts` — GET with `?year` query param
-- [ ] `app/api/[level]/questions/[id]/route.ts` — GET with `?includeSolution=true` gating
+- [ ] `app/api/[level]/topics/[topic]/questions/route.ts` — GET (optional `?year` filter)
 - [ ] `app/api/[level]/chat/[questionId]/route.ts` — POST body `{ sessionId, message, history }`
   - [ ] Validate body with Zod
   - [ ] Sanitise user message via `lib/sanitise.ts`
+  - [ ] Fetch question (including `solutionSteps`) server-side via the repository — never trust the client to supply solution context
   - [ ] Build prompt via `lib/prompt.ts`
   - [ ] Return `new Response(readableStream)` piping `provider.streamResponse()` (Web Standards — works in both Next.js and Lambda Response Streaming later)
 - [ ] All routes: Zod validation, structured JSON logging, proper HTTP status codes
 - [ ] Runtime: `export const runtime = 'nodejs'` for parity with future Lambda Node 20
+
+The `app/api/[level]/questions/[id]/route.ts` route from the previous design is removed — the topic page renders question bodies via the repository directly, and the chat handler fetches `solutionSteps` server-side.
 
 ## 5. Shared UI Primitives
 
@@ -79,33 +81,40 @@ Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`
 - [ ] `/` page — hero + `<LevelChooser />` (two large cards: Higher Level / Ordinary Level)
 - [ ] `/[level]` page — topic grid for the chosen level
 - [ ] `<TopicGrid />` — responsive grid of topic cards with name, question count (scoped to level), icon
-- [ ] `/[level]/topics/[topic]` page — filterable question list for a topic at that level
-- [ ] `<QuestionList />` — cards showing year badge and truncated preview
-- [ ] Year filter with URL state persistence via `useSearchParams`
-- [ ] Empty states and loading skeletons
+- [ ] Empty states and loading skeletons on landing and level pages
 
-## 7. Frontend: Question Page
+The topic page (`/[level]/topics/[topic]`) is covered in §7, which renders the full question set inline — there is no separate question-list preview page in this design.
 
-- [ ] `/[level]/questions/[questionId]` page — Server Component fetches question metadata (scoped to level)
-- [ ] Desktop: two-column layout — `<QuestionViewer />` left, `<ChatPanel />` right
-- [ ] Mobile: single-column with tab switcher (Question / Chat / Solution)
-- [ ] `<QuestionViewer />` — renders `questionText` via `<MathRenderer />`, shows metadata badges
-- [ ] `<SolutionPanel />` — collapsible; reveals numbered solution steps + marking scheme
-- [ ] "Explain this step" button on each step pre-fills and submits the chat
+## 7. Frontend: Topic Page (Inline Questions)
 
-## 8. Frontend: Chat Panel
+The topic page renders the topic's full question set inline, ordered by year descending. There is no separate question-detail page.
 
-- [ ] Zustand store `store/chat.ts` keyed by `questionId` (switching questions resets cleanly)
-- [ ] `sessionId` UUIDv4 persisted in `sessionStorage` per question
+- [ ] Rewrite `/[level]/topics/[topic]/page.tsx` — Server Component fetches all questions for `(level, topic)` via `getQuestionRepository().getQuestionsByTopic()` and sorts by `year` descending. Each question renders as a `<QuestionCard />`.
+- [ ] Drop the year filter and the `?year=` URL plumbing introduced in the prior design — questions are always ordered newest first
+- [ ] Remove the now-unused `<QuestionList />` and `<YearFilter />` components and their imports
+- [ ] `<QuestionCard />` — always-visible question body via `<MathRenderer />`, year badge, and two stacked accordions underneath
+- [ ] Accordion behaviour: "Marking Scheme" and "AI Helper" are mutually exclusive within a card (opening one closes the other); both default closed; opening one card's accordion does not affect any other card
+- [ ] `<MarkingSchemePanel />` — renders `markingScheme` LaTeX inside the Marking Scheme accordion. `solutionSteps` is **never** shown to the student — it is server-side context for the AI helper only and must not be sent to the browser
+- [ ] Topic page Server Component must include `questionText` + `markingScheme` per question, and must NOT include `solutionSteps` in its serialised output
+- [ ] Empty state: if a topic has no questions for the chosen level, show a friendly placeholder instead of an empty page
+
+## 8. Frontend: Chat Panel (AI Helper Accordion)
+
+`<ChatPanel />` lives inside each `<QuestionCard />`'s "AI Helper" accordion. Multiple `<ChatPanel />` instances coexist on a topic page — one per question — each isolated by `questionId`.
+
+- [ ] Zustand store `store/chat.ts` keyed by `questionId` — each card has independent message history and streaming state
+- [ ] `sessionId` UUIDv4 persisted in `sessionStorage` per question (key includes `questionId`)
 - [ ] Client-side message history only — no server persistence for demo
-- [ ] `<ChatPanel />` renders message list + input + send button
+- [ ] `<ChatPanel />` renders message list + input + send button inside a fixed-height container (~3 user/assistant pairs visible)
+- [ ] Internal scroll within the chat panel; outer page scroll is unaffected
+- [ ] Auto-scroll the chat to the latest message during streaming; "scroll to latest" affordance only if the user scrolled up mid-stream
 - [ ] POST to `/api/[level]/chat/[questionId]` with `{ sessionId, message, history }`
 - [ ] Stream response via `Response.body.getReader()`, append chunks to the latest assistant message
 - [ ] Render all messages through `<MathRenderer />`
 - [ ] Typing indicator during streaming
 - [ ] Quick-action buttons: "Give me a hint", "Walk me through the solution"
 - [ ] Inline error state with retry; conversation history preserved on failure
-- [ ] Auto-scroll to bottom; "scroll to latest" button if the user scrolled up mid-stream
+- [ ] Opening the AI Helper accordion closes the Marking Scheme accordion on the same card (and vice versa)
 
 ## 9. UI Polish & Aesthetic
 
@@ -122,9 +131,10 @@ Handlers are **thin wrappers** — all logic lives in `lib/` and `repositories/`
 - [ ] Vitest: `MockProvider` hint / solution / generic branches
 - [ ] Vitest: `lib/prompt.ts` variable interpolation
 - [ ] Vitest: `lib/session.ts` 10-turn truncation
-- [ ] Vitest: `LocalJsonRepository` filters + not-found handling
+- [ ] Vitest: `LocalJsonRepository` topic-list ordering and not-found handling
 - [ ] Vitest: `lib/sanitise.ts` strips injection markers
-- [ ] Manual walkthrough: browse → question → render → send chat → toggle solution → "explain this step"
+- [ ] Vitest: topic-page Server Component output excludes `solutionSteps` from any serialised props
+- [ ] Manual walkthrough: pick level → pick topic → see all questions in descending year order → open Marking Scheme on a card → open AI Helper on the same card (Marking Scheme should close) → send a chat message and watch the streamed response
 - [ ] Run the walkthrough both locally (`pnpm dev`) and against the Vercel preview URL
 
 ## 11. Vercel Deployment
@@ -157,14 +167,13 @@ Post-deployment:
 
 A stakeholder can, from a link you send them:
 
-1. Land on the platform
+1. Land on the platform and pick Higher or Ordinary level
 2. See three topics with question counts
-3. Pick any topic, filter by year/difficulty, open a question
-4. See LaTeX render correctly
-5. Ask the AI tutor and see a streamed, contextual response
-6. Click "Give me a hint" → single guided step
-7. Toggle the solution, click "Explain this step" → chat responds in context
-8. Use it comfortably on their phone
+3. Pick any topic and see every question for that topic, ordered newest year first, with LaTeX rendering correctly
+4. Open the Marking Scheme accordion under any question to read the official marking scheme
+5. Open the AI Helper accordion to ask a contextual question and see a streamed response (opening AI Helper closes Marking Scheme automatically, and vice versa)
+6. Click "Give me a hint" → single guided step; "Walk me through the solution" → step-by-step walkthrough
+7. Use it comfortably on their phone
 
 ---
 

@@ -224,27 +224,25 @@ Create realistic LaTeX-formatted dummy questions across three topics, sufficient
 
 **`GET /topics/{topic}/questions`**
 
-- Queries `TOPIC#<topic>` partition
-- Optional query params: `?year=`, `?difficulty=`, `?paper=`
-- Returns question list without `markingScheme` or `solutionSteps` (metadata only)
+- Queries `LEVEL#<level>#TOPIC#<topic>` partition
+- Optional query param: `?year=`
+- Returns the full question set including `questionText` and `markingScheme`. **Never** returns `solutionSteps` — that field is server-only and used by the chat Lambda.
 
-**`GET /questions/{questionId}`**
-
-- `GetItem` by reconstructed `PK` + `SK`
-- Returns full question; omits `solutionSteps` unless `?includeSolution=true`
+There is no `GET /questions/{questionId}` Lambda. The topic page renders questions inline, and the chat Lambda fetches `solutionSteps` directly from DynamoDB.
 
 All handlers: Zod input validation, structured error responses (`{ error, code }`), structured JSON logs.
 
-### 2.3 Frontend — Browse & Question View
+### 2.3 Frontend — Browse & Tutor
 
 **Pages:**
 
 - `/` — Level chooser (Higher Level / Ordinary Level) + brief platform description
 - `/[level]` — Topic grid for the selected level (`level` is `higher` or `ordinary`)
-- `/[level]/topics/[topic]` — Filterable question list for a topic at that level
-- `/[level]/questions/[questionId]` — Full question page with AI chat
+- `/[level]/topics/[topic]` — All questions for that topic rendered inline in descending year order, each with its own marking scheme and AI helper accordions
 
 Level is a required URL segment for any question-browsing route. Students pick their level on the landing page and that choice is encoded in the URL going forward; there is no global toggle. This keeps HL and OL question banks fully segregated.
+
+Browsing and tutoring share a single page. There is no separate question-detail route — once a student picks a topic, every question in that topic is on screen, with the marking scheme and AI helper available per question.
 
 **Components:**
 
@@ -252,15 +250,17 @@ Level is a required URL segment for any question-browsing route. Students pick t
 
 `<TopicGrid />` — Grid of topic cards; each shows topic name, question count (scoped to the current level), and a representative icon. Links to `/[level]/topics/[topic]`.
 
-`<QuestionList />` — Renders question metadata cards with year badges. Filter control at top (year dropdown). Links to `/[level]/questions/[questionId]`.
+`<QuestionList />` — Renders the full set of questions for a topic in descending year order. Each entry is a `<QuestionCard />`.
 
-`<QuestionViewer />` — Renders `questionText` via `<MathRenderer />`; hosts `<SolutionPanel />` and `<ChatPanel />` side-by-side on desktop, stacked on mobile.
+`<QuestionCard />` — Always-visible question body via `<MathRenderer />` plus a year badge. Underneath, two stacked accordions: "Marking Scheme" and "AI Helper". Only one accordion may be open per card at a time; both default closed.
 
-`<SolutionPanel />` — Toggle button reveals `solutionSteps` as numbered list and `markingScheme`. Each step has an "Explain this step" button that pre-fills the chat input.
+`<MarkingSchemePanel />` — Inside the "Marking Scheme" accordion. Renders `markingScheme` LaTeX. `solutionSteps` is **not** shown to the student — it is private context for the AI helper only.
+
+`<ChatPanel />` — Inside the "AI Helper" accordion. Fixed visible height showing roughly three message exchanges with internal scroll; auto-scrolls to the latest message. State is isolated per `questionId`.
 
 `<MathRenderer />` — Splits text on `$...$` and `$$...$$` delimiters; renders math segments via `react-katex`; wraps in an error boundary to display raw LaTeX on parse failure.
 
-**Data fetching:** Next.js Server Components fetch question list and question detail from the API. Chat interactions are client-side only.
+**Data fetching:** Next.js Server Components fetch the topic's full question set (including `markingScheme`) directly via `getQuestionRepository()`. `solutionSteps` is never serialised to the browser — the chat API route fetches it server-side per request to ground the AI helper's responses. Chat interactions are otherwise client-side only.
 
 ---
 
@@ -352,13 +352,16 @@ Tutor:
 
 **`<ChatPanel />`**
 
-- Isolated Zustand slice keyed by `questionId` — switching questions resets chat state
-- Sends `POST /questions/{questionId}/chat` with `sessionId` (UUID, stored in `sessionStorage`)
+- Lives inside each `<QuestionCard />`'s "AI Helper" accordion — multiple chat panels coexist on a topic page, one per question
+- Isolated Zustand slice keyed by `questionId` — every card has its own independent chat history
+- `sessionId` UUIDv4 persisted in `sessionStorage` per `questionId`
+- Sends `POST /questions/{questionId}/chat` with `{ sessionId, message, history }`
 - Reads response as `ReadableStream`, appends chunks to the latest assistant message in state
 - Renders each message through `<MathRenderer />` so LaTeX in responses renders correctly
 - Shows typing indicator (animated ellipsis) while streaming
-- Quick-action buttons: "Give me a hint", "Explain the solution"
-- "Explain this step" buttons in `<SolutionPanel />` pre-fill and auto-submit the chat input
+- Fixed visible height showing roughly three user/assistant pairs; internal scroll; auto-scrolls to the latest message
+- Quick-action buttons: "Give me a hint", "Walk me through the solution"
+- Opening the AI Helper accordion closes the Marking Scheme accordion on the same card (and vice versa)
 
 ---
 
@@ -410,12 +413,13 @@ Tutor:
 
 ### End-to-End Tests (Playwright)
 
-- Browse topics → select question → LaTeX renders without visible raw markup
+- Pick a level → pick a topic → questions render inline in descending year order with LaTeX visible (no raw markup)
+- Open the Marking Scheme accordion on a question → official marking scheme appears
+- Open the AI Helper accordion on the same card → Marking Scheme closes automatically
 - Send a chat message → streaming response appears token by token
-- Toggle solution panel → steps and marking scheme appear
-- "Explain this step" button → pre-fills chat and submits
+- Use "Give me a hint" → returns a single-step hint; use "Walk me through the solution" → returns the step-by-step walkthrough
 - 101st request to `/chat` within a minute → returns 429
-- Invalid `questionId` → 404 page shown
+- Invalid `level` or `topic` slug → 404 page shown
 
 ### Accessibility (axe-core in Playwright)
 
@@ -477,7 +481,7 @@ Once the application is live and the UX has been validated with the mock provide
 
 1. Create Clerk production instance
 2. Wrap `apps/web` in `<ClerkProvider>`; add sign-in/sign-up pages
-3. Protect `/[level]/questions/[questionId]` behind `auth()` Next.js middleware
+3. Protect `/[level]/topics/[topic]` and `/api/[level]/chat/[questionId]` behind `auth()` Next.js middleware
 4. Add Clerk JWT Lambda authoriser in Terraform `api_gateway` module
 5. Attach `userId` from JWT to `ChatSessions` items for cross-device history persistence
 
@@ -507,18 +511,15 @@ Once the application is live and the UX has been validated with the mock provide
 │       │   ├── page.tsx                    # Landing / level chooser
 │       │   └── [level]/
 │       │       ├── page.tsx                # Topic grid for level
-│       │       ├── topics/
-│       │       │   └── [topic]/
-│       │       │       └── page.tsx
-│       │       └── questions/
-│       │           └── [questionId]/
-│       │               └── page.tsx
+│       │       └── topics/
+│       │           └── [topic]/
+│       │               └── page.tsx        # All questions for topic, inline
 │       ├── components/
 │       │   ├── LevelChooser.tsx
 │       │   ├── TopicGrid.tsx
 │       │   ├── QuestionList.tsx
-│       │   ├── QuestionViewer.tsx
-│       │   ├── SolutionPanel.tsx
+│       │   ├── QuestionCard.tsx
+│       │   ├── MarkingSchemePanel.tsx
 │       │   ├── ChatPanel.tsx
 │       │   └── MathRenderer.tsx
 │       ├── lib/
@@ -529,7 +530,6 @@ Once the application is live and the UX has been validated with the mock provide
 ├── lambdas/
 │   ├── get-topics/
 │   ├── get-questions/
-│   ├── get-question/
 │   └── chat/
 │       └── providers/
 │           ├── index.ts                    # getAIProvider factory
