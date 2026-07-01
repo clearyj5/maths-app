@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { QuestionList } from '@/components/QuestionList';
-import { YearFilter } from '@/components/YearFilter';
+import { QuestionCard } from '@/components/QuestionCard';
 import { Badge } from '@/components/ui/Badge';
 import { getQuestionRepository } from '@/repositories';
 import { LevelSchema, TopicSchema } from '@/schemas/question';
@@ -10,7 +9,6 @@ import { TOPIC_LABELS } from '@/repositories/question-repository';
 
 interface PageProps {
   params: Promise<{ level: string; topic: string }>;
-  searchParams: Promise<{ year?: string }>;
 }
 
 const LEVEL_LABELS = {
@@ -18,11 +16,8 @@ const LEVEL_LABELS = {
   ordinary: 'Ordinary Level',
 } as const;
 
-export default async function TopicQuestionsPage({ params, searchParams }: PageProps) {
-  const [{ level: levelParam, topic: topicParam }, { year: yearParam }] = await Promise.all([
-    params,
-    searchParams,
-  ]);
+export default async function TopicQuestionsPage({ params }: PageProps) {
+  const { level: levelParam, topic: topicParam } = await params;
 
   const levelResult = LevelSchema.safeParse(levelParam);
   if (!levelResult.success) notFound();
@@ -32,19 +27,10 @@ export default async function TopicQuestionsPage({ params, searchParams }: PageP
   const level = levelResult.data;
   const topic = topicResult.data;
 
-  const repo = getQuestionRepository();
-  const yearNumber = yearParam ? Number(yearParam) : undefined;
-  const hasYearFilter = yearNumber !== undefined && !Number.isNaN(yearNumber);
-
-  const [questions, allQuestions] = await Promise.all([
-    repo.getQuestionsByTopic(level, topic, hasYearFilter ? { year: yearNumber } : undefined),
-    repo.getQuestionsByTopic(level, topic),
-  ]);
-
-  const availableYears = Array.from(new Set(allQuestions.map((q) => q.year))).sort((a, b) => b - a);
+  const questions = await getQuestionRepository().getQuestionsByTopic(level, topic);
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 p-8">
+    <main className="mx-auto max-w-4xl space-y-8 p-8">
       <div className="space-y-4">
         <Link
           href={`/${level}`}
@@ -58,17 +44,23 @@ export default async function TopicQuestionsPage({ params, searchParams }: PageP
           <Badge variant={level}>{LEVEL_LABELS[level]}</Badge>
         </div>
         <p className="text-slate-600 dark:text-slate-400">
-          {allQuestions.length} question{allQuestions.length === 1 ? '' : 's'} in this topic.
+          {questions.length} question{questions.length === 1 ? '' : 's'}, newest first.
         </p>
       </div>
 
-      {availableYears.length > 1 && (
-        <div className="flex flex-wrap gap-4">
-          <YearFilter years={availableYears} />
+      {questions.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-slate-300 p-8 text-center dark:border-slate-700">
+          <p className="text-slate-600 dark:text-slate-400">
+            No questions are available for this topic yet.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {questions.map((question) => (
+            <QuestionCard key={question.questionId} level={level} question={question} />
+          ))}
         </div>
       )}
-
-      <QuestionList level={level} questions={questions} />
     </main>
   );
 }

@@ -39,7 +39,7 @@ function loadAllQuestions(): Question[] {
 }
 
 function toSummary(question: Question): QuestionSummary {
-  const { markingScheme: _markingScheme, solutionSteps: _solutionSteps, ...summary } = question;
+  const { solutionSteps: _solutionSteps, ...summary } = question;
   return summary;
 }
 

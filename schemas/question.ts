@@ -21,7 +21,6 @@ export const QuestionSchema = z.object({
 });
 
 export const QuestionSummarySchema = QuestionSchema.omit({
-  markingScheme: true,
   solutionSteps: true,
 });
 
